@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مشتریار | پنل مدیر</title>
+<style>
+*{box-sizing:border-box}body{font-family:Tahoma,Arial,sans-serif;background:#edf2f8;color:#172c4b;margin:0;padding:18px}.wrap{max-width:720px;margin:auto}.card{background:white;border-radius:16px;padding:22px;margin:14px 0;box-shadow:0 5px 20px #172c4b12}h1{font-size:23px}h2{font-size:18px}label{display:block;margin:12px 0 6px}input,button{font:inherit;padding:12px;border-radius:9px}input{width:100%;border:1px solid #b8c6d7}button{border:0;background:#172c4b;color:white;margin-top:14px;cursor:pointer}button:disabled{opacity:.5}button.secondary{background:#526783}.hidden{display:none}.notice{background:#fff4d9;padding:12px;border-radius:9px;font-size:13px;line-height:2}.item{border:1px solid #d7e0ec;border-radius:10px;padding:12px;margin:9px 0;line-height:2}.muted{color:#60728a;font-size:13px}#status{white-space:pre-wrap;line-height:1.8}
+</style>
+</head><body><main class="wrap">
+<h1>پنل مدیریت مشتریار</h1>
+<p class="notice">نسخه آزمایشی: فقط از اطلاعات ساختگی استفاده کنید. این صفحه برای نگهداری مدارک شناسایی واقعی آماده نیست.</p>
+<section class="card" id="loginSection"><h2>ورود مدیر</h2><form id="loginForm"><label for="email">ایمیل</label><input id="email" type="email" autocomplete="username" required><label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" required><button type="submit">ورود</button></form></section>
+<section class="card hidden" id="panel"><p id="who" class="muted"></p><button class="secondary" id="logout">خروج</button><h2>ثبت مسافر ساختگی</h2><p class="muted">با زدن دکمه، یک سند آزمایشی در مجموعه customers ذخیره می‌شود.</p><button id="addDemo">ثبت مسافر آزمایشی</button><h2>فهرست مسافران</h2><button class="secondary" id="refresh">بروزرسانی فهرست</button><div id="customers"></div></section>
+<p id="status" role="status" aria-live="polite"></p>
+</main>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getFirestore,collection,addDoc,getDocs,query,orderBy,limit,serverTimestamp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+const firebaseConfig={apiKey:'AIzaSyCsDR-ok2FZkGOiZK8DmcQqTYiyZoZh0L0',authDomain:'moshtaryar-f925d.firebaseapp.com',projectId:'moshtaryar-f925d',storageBucket:'moshtaryar-f925d.firebasestorage.app',messagingSenderId:'592861229677',appId:'1:592861229677:web:46aa0dffe1222c81188564'};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const $=id=>document.getElementById(id),setStatus=msg=>{$('status').textContent=msg};
+const login=$('loginSection'),panel=$('panel');
+onAuthStateChanged(auth,user=>{login.classList.toggle('hidden',!!user);panel.classList.toggle('hidden',!user);$('who').textContent=user?'ورود با: '+user.email:'';if(user)loadCustomers();else $('customers').replaceChildren()});
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();setStatus('در حال ورود...');try{await signInWithEmailAndPassword(auth,$('email').value,$('password').value);$('password').value='';setStatus('ورود موفق.')}catch(err){setStatus('ورود انجام نشد: '+err.code)}});
+$('logout').addEventListener('click',async()=>{await signOut(auth);setStatus('خارج شدید.')});
+$('addDemo').addEventListener('click',async()=>{setStatus('در حال ثبت اطلاعات آزمایشی...');try{await addDoc(collection(db,'customers'),{fullName:'مسافر آزمایشی',phone:'09120000000',province:'تهران',city:'تهران',nationalId:'0000000000',startDate:'2026-11-01',guestCount:2,isDemo:true,createdAt:serverTimestamp()});setStatus('مسافر آزمایشی ثبت شد.');await loadCustomers()}catch(err){setStatus('ثبت انجام نشد: '+err.code+'\nقوانین Firestore و UID مدیر را بررسی کنید.')}});
+$('refresh').addEventListener('click',loadCustomers);
+async function loadCustomers(){setStatus('در حال دریافت فهرست...');try{const snapshot=await getDocs(query(collection(db,'customers'),orderBy('createdAt','desc'),limit(30)));const root=$('customers');root.replaceChildren();snapshot.forEach(doc=>{const d=doc.data(),item=document.createElement('div');item.className='item';const name=document.createElement('strong');name.textContent=d.fullName||'بدون نام';const info=document.createElement('div');info.className='muted';info.textContent=[d.city,d.startDate,d.guestCount?d.guestCount+' نفر':''].filter(Boolean).join(' | ');item.append(name,info);root.append(item)});if(snapshot.empty)root.textContent='هنوز مسافری ثبت نشده است.';setStatus('فهرست بروزرسانی شد.')}catch(err){setStatus('دریافت فهرست انجام نشد: '+err.code+'\nورود مدیر و قوانین Firestore را بررسی کنید.')}}
+</script></body></html>
