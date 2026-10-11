@@ -18,7 +18,9 @@ import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {getFirestore,collection,addDoc,getDocs,query,orderBy,limit,serverTimestamp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const firebaseConfig={apiKey:'AIzaSyCsDR-ok2FZkGOiZK8DmcQqTYiyZoZh0L0',authDomain:'moshtaryar-f925d.firebaseapp.com',projectId:'moshtaryar-f925d',storageBucket:'moshtaryar-f925d.firebasestorage.app',messagingSenderId:'592861229677',appId:'1:592861229677:web:46aa0dffe1222c81188564'};
-const app=initializeApp(firebaseConfig),auth=getAuth(app),const db = getFirestore(app, "default");
+cconst app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app, "default");
 const $=id=>document.getElementById(id),setStatus=msg=>{$('status').textContent=msg};
 const login=$('loginSection'),panel=$('panel');
 onAuthStateChanged(auth,user=>{login.classList.toggle('hidden',!!user);panel.classList.toggle('hidden',!user);$('who').textContent=user?'ورود با: '+user.email:'';if(user)loadCustomers();else $('customers').replaceChildren()});
