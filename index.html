@@ -1,21 +1,242 @@
-نام و نام خانوادگی
 
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>مشتریار | ثبت اطلاعات اقامت</title>
 
+  <style>
+    * { box-sizing: border-box; }
 
-شماره موبایل
+    body {
+      font-family: Tahoma, sans-serif;
+      background: #eef3f9;
+      margin: 0;
+      padding: 18px;
+      color: #172c4b;
+    }
 
+    .card {
+      max-width: 480px;
+      margin: 15px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px #172c4b15;
+    }
 
+    h2 {
+      text-align: center;
+      margin-bottom: 8px;
+    }
 
-استان و شهر
+    .subtitle {
+      text-align: center;
+      color: #65758b;
+      font-size: 13px;
+      line-height: 1.9;
+    }
 
+    label {
+      display: block;
+      margin-top: 17px;
+      margin-bottom: 7px;
+      font-weight: bold;
+      font-size: 14px;
+    }
 
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccd5e2;
+      border-radius: 10px;
+      font-size: 16px;
+      background: #fff;
+    }
 
-کد ملی
+    input:focus, select:focus {
+      outline: 2px solid #5797df;
+    }
 
+    .notice {
+      background: #fff3d7;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.9;
+    }
 
+    .consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 22px;
+      line-height: 1.9;
+      font-size: 13px;
+    }
 
-آپلود تصویر کارت ملی یا مدرک شناسایی
+    .consent input {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
 
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 22px;
+      border: none;
+      border-radius: 10px;
+      background: #172c4b;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
 
+    #result {
+      text-align: center;
+      font-size: 14px;
+      color: #14734a;
+      line-height: 1.8;
+    }
+  </style>
+</head>
 
-تأیید رضایت‌نامه و دکمه ارسال اطلاعات
+<body>
+  <div class="card">
+    <h2>ثبت اطلاعات اقامت</h2>
+
+    <p class="subtitle">
+      لطفاً مشخصات خود را برای
+      ثبت درخواست اقامت تکمیل کنید.
+    </p>
+
+    <p class="notice">
+      نسخه آزمایشی مشتریار است.
+      لطفاً از اطلاعات و مدارک واقعی
+      استفاده نکنید.
+      در این نسخه هیچ اطلاعاتی
+      ذخیره یا ارسال نمی‌شود.
+    </p>
+
+    <form id="customerForm">
+
+      <label for="fullName">
+        ۱. نام و نام خانوادگی *
+      </label>
+      <input id="fullName" name="fullName"
+             type="text" required
+             placeholder="نام و نام خانوادگی">
+
+      <label for="phone">
+        ۲. شماره موبایل *
+      </label>
+      <input id="phone" name="phone"
+             type="tel"
+             inputmode="numeric"
+             pattern="09[0-9]{9}"
+             maxlength="11"
+             placeholder="09123456789"
+             required>
+
+      <label for="province">
+        ۳. استان *
+      </label>
+      <input id="province" name="province"
+             type="text" required
+             placeholder="نام استان">
+
+      <label for="city">شهر *</label>
+      <input id="city" name="city"
+             type="text" required
+             placeholder="نام شهر">
+
+      <label for="nationalId">
+        ۴. کد ملی *
+      </label>
+      <input id="nationalId"
+             name="nationalId"
+             inputmode="numeric"
+             pattern="[0-9]{10}"
+             maxlength="10"
+             placeholder="کد ملی ۱۰ رقمی"
+             required>
+
+      <label for="startDate">
+        ۵. تاریخ شروع اقامت *
+      </label>
+      <input id="startDate"
+             name="startDate"
+             type="date"
+             required>
+
+      <label for="guestCount">
+        ۶. تعداد نفرات *
+      </label>
+      <input id="guestCount"
+             name="guestCount"
+             type="number"
+             min="1"
+             max="100"
+             step="1"
+             placeholder="تعداد مسافران"
+             required>
+
+      <label for="document">
+        ۷. تصویر کارت ملی یا مدرک شناسایی *
+      </label>
+      <input id="document"
+             name="document"
+             type="file"
+             accept="image/jpeg,image/png"
+             required>
+
+      <label class="consent">
+        <input type="checkbox"
+               id="consent" required>
+        <span>
+          تأیید می‌کنم که اطلاعات
+          آزمایشی وارد کرده‌ام و
+          از این فرم صرفاً برای
+          آزمایش استفاده می‌کنم.
+        </span>
+      </label>
+
+      <button type="submit">
+        ۸. آزمایش ارسال اطلاعات
+      </button>
+
+    </form>
+
+    <p id="result" role="status"></p>
+  </div>
+
+  <script>
+    const form =
+      document.getElementById("customerForm");
+
+    const startDate =
+      document.getElementById("startDate");
+
+    const today = new Date();
+    const localDate = new Date(
+      today.getTime() -
+      today.getTimezoneOffset() * 60000
+    ).toISOString().slice(0, 10);
+
+    startDate.min = localDate;
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      document.getElementById("result")
+        .textContent =
+        "فرم با موفقیت بررسی شد. " +
+        "این نسخه آزمایشی است و " +
+        "اطلاعات ارسال یا ذخیره نشده‌اند.";
+    });
+  </script>
+</body>
+</html>
